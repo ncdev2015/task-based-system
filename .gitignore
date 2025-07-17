@@ -1,0 +1,90 @@
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Static libraries
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# CMake build directory
+build/
+out/
+cmake-build-*/
+CMakeFiles/
+*.cmake
+Makefile
+CMakeCache.txt
+install_manifest.txt
+compile_commands.json
+
+# IDE specific files
+.vscode/
+.idea/
+*.user
+*.suo
+*.ncb
+*.sdf
+
+# Dependency directories
+deps/
+external/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Editor temporary files
+*~
+*.swp
+*.swo
+
+# Logs and databases
+*.log
+*.sql
+*.sqlite
+
+# Testing
+CTestTestfile.cmake
+
+# Local development files
+local.*
+.env
+*.local
+
+# Package files
+*.deb
+*.rpm
+*.tar.gz
+*.zip
+
+# Profiling data
+*.prof
+*.gcda
+*.gcno
+
+# Documentation
+docs/_build/

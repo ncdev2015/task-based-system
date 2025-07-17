@@ -1,0 +1,36 @@
+# Task 1
+
+# Creating users
+CREATE USER alice       # Creates a new user named 'alice'
+CREATE USER bob         # Creates a new user named 'bob'
+
+# Deleting a user
+DELETE USER bob         # Deletes user 'bob'
+
+# Disabling a user account
+DISABLE USER alice      # Disables user 'alice' account
+
+# Sending a message to a user
+SEND MESSAGE alice "Welcome to the system!"  # Sends a message to 'alice'
+
+# Sending a ping to user
+PING carol 1
+
+# Adding a user to a group
+ADD USER alice TO GROUP admins  # Adds 'alice' to the 'admins' group
+
+# Removing a user from a group
+REMOVE USER alice FROM GROUP guests  # Removes 'alice' from the 'guests' group
+
+# Listing users and groups
+GET USERS               # Retrieves a list of all users
+GET GROUPS              # Retrieves a list of all groups
+
+# Retrieving message history for a user
+GET MESSAGE HISTORY alice  # Retrieves all messages sent to 'alice'
+
+# Sending a ping to user
+PING alice 3
+
+# Exiting task
+EXIT                    # Ends the task

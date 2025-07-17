@@ -1,0 +1,8 @@
+# Task 3
+CREATE USER alice
+CREATE USER bob
+DELETE USER bob
+SEND MESSAGE alice
+ADD USER alice TO GROUP admins
+GET MESSAGE HISTORY alice
+EXIT
