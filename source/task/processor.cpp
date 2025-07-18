@@ -62,6 +62,13 @@ TaskProcessor::TaskProcessor() {
 }
 
 void TaskProcessor::processTask(const std::string& filename) {
+    // Validate file before loading
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        throw std::runtime_error("Cannot open file: " + filename);
+    }
+    file.close();
+
     userManager.reset();
     
     std::cout << fmt::format("[Processing task: {}]\n", filename);
