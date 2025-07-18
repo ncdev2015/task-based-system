@@ -1,5 +1,5 @@
-#ifndef PARSER_HPP
-#define PARSER_HPP
+#ifndef PARSER_PARSER_HPP
+#define PARSER_PARSER_HPP
 
 // Standard Library
 #include <algorithm>       // For std::find_if, etc. (used in parsing logic)
@@ -226,4 +226,4 @@ private:
     }
 };
 
-#endif // PARSER_HPP
+#endif // PARSER_PARSER_HPP

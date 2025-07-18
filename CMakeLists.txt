@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.24 FATAL_ERROR)
 
-project(wzh-parsersec
+project(wzh-assesment
     VERSION 0.1
     LANGUAGES CXX
     DESCRIPTION "Task-based user management system"
