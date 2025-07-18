@@ -3,59 +3,102 @@ cmake_minimum_required(VERSION 3.24 FATAL_ERROR)
 project(wzh-parsersec
     VERSION 0.1
     LANGUAGES CXX
+    DESCRIPTION "Task-based user management system"
 )
 
+# Set C++ standard and warnings
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
+
+# Warning configuration
+if(MSVC)
+    add_compile_options(/W4 /WX)
+else()
+    add_compile_options(-Wall -Wextra -Wpedantic -Werror)
+    
+    # Disable specific warnings we need to suppress
+    add_compile_options(
+        -Wno-sign-compare                # For parsec's signed/unsigned comparisons
+        -Wno-unused-parameter           # For unused cmd parameters in executors
+    )
+endif()
 
 # Set directories
-set(PS_SOURCE_DIR ${PROJECT_SOURCE_DIR}/source)
+set(INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include)
+set(SOURCE_DIR ${CMAKE_SOURCE_DIR}/src)
+set(THIRD_PARTY_DIR ${CMAKE_SOURCE_DIR}/third_party)
 
-####################################################################################################
-# CPM as cmake package manager
-####################################################################################################
-set(CPM_DOWNLOAD_VERSION 0.40.8)
-
-if(CPM_SOURCE_CACHE)
-  set(CPM_DOWNLOAD_LOCATION "${CPM_SOURCE_CACHE}/cpm/CPM_${CPM_DOWNLOAD_VERSION}.cmake")
-elseif(DEFINED ENV{CPM_SOURCE_CACHE})
-  set(CPM_DOWNLOAD_LOCATION "$ENV{CPM_SOURCE_CACHE}/cpm/CPM_${CPM_DOWNLOAD_VERSION}.cmake")
-else()
-  set(CPM_DOWNLOAD_LOCATION "${CMAKE_BINARY_DIR}/cmake/CPM_${CPM_DOWNLOAD_VERSION}.cmake")
-endif()
-
-if(NOT (EXISTS ${CPM_DOWNLOAD_LOCATION}))
-  message(STATUS "Downloading CPM.cmake to ${CPM_DOWNLOAD_LOCATION}")
-  file(DOWNLOAD
-       https://github.com/TheLartians/CPM.cmake/releases/download/v${CPM_DOWNLOAD_VERSION}/CPM.cmake
-       ${CPM_DOWNLOAD_LOCATION}
-  )
-endif()
-
-include(${CPM_DOWNLOAD_LOCATION})
-
-# Download dependencies
-CPMAddPackage(
-  NAME fmt
-  GITHUB_REPOSITORY fmtlib/fmt
-  GIT_TAG "8.1.1"
-  OPTIONS "FMT_HEADER_ONLY ON"
+# Include directories
+include_directories(
+    ${INCLUDE_DIR}
+    ${THIRD_PARTY_DIR}
 )
 
-####################################################################################################
+##############################################################################
+# Dependencies
+##############################################################################
 
-# add subdirectories
-add_subdirectory(${PS_SOURCE_DIR}/parsec)
-
-# add executable
-add_executable(main ${PS_SOURCE_DIR}/main.cpp)
-target_link_libraries(main fmt::fmt parsec)
-
-# Link filesystem library for C++17
-if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 9.0)
-    target_link_libraries(main stdc++fs)
+# CPM package manager
+set(CPM_DOWNLOAD_VERSION 0.38.7)
+if(NOT EXISTS ${CMAKE_BINARY_DIR}/cmake/CPM_${CPM_DOWNLOAD_VERSION}.cmake)
+    file(DOWNLOAD https://github.com/cpm-cmake/CPM.cmake/releases/download/v${CPM_DOWNLOAD_VERSION}/CPM.cmake
+         ${CMAKE_BINARY_DIR}/cmake/CPM_${CPM_DOWNLOAD_VERSION}.cmake)
 endif()
+include(${CMAKE_BINARY_DIR}/cmake/CPM_${CPM_DOWNLOAD_VERSION}.cmake)
 
-# Copy task files
+# fmt library
+CPMAddPackage(
+    NAME fmt
+    GITHUB_REPOSITORY fmtlib/fmt
+    GIT_TAG 10.1.1
+    OPTIONS "FMT_INSTALL ON"
+)
+
+# parsec library with specific warning suppression
+add_library(parsec_interface INTERFACE)
+target_include_directories(parsec_interface INTERFACE ${THIRD_PARTY_DIR}/parsec/interface)
+
+# Create alias to maintain compatibility
+add_library(parsec ALIAS parsec_interface)
+
+##############################################################################
+# Main executable
+##############################################################################
+
+file(GLOB_RECURSE SOURCES
+    "${SOURCE_DIR}/*.cpp"
+    "${CMAKE_SOURCE_DIR}/main.cpp"
+)
+
+add_executable(${PROJECT_NAME} ${SOURCES})
+
+target_include_directories(${PROJECT_NAME} PRIVATE
+    ${INCLUDE_DIR}
+    ${THIRD_PARTY_DIR}
+)
+
+target_link_libraries(${PROJECT_NAME} PRIVATE
+    fmt::fmt
+    parsec_interface
+    stdc++fs
+)
+
 file(COPY ${CMAKE_SOURCE_DIR}/tasks DESTINATION ${CMAKE_BINARY_DIR})
+
+##############################################################################
+# Installation
+##############################################################################
+
+install(TARGETS ${PROJECT_NAME} DESTINATION bin)
+install(DIRECTORY ${INCLUDE_DIR}/ DESTINATION include)
+
+##############################################################################
+# Testing
+##############################################################################
+
+option(BUILD_TESTING "Build tests" OFF)
+if(BUILD_TESTING)
+    enable_testing()
+    add_subdirectory(tests)
+endif()
