@@ -49,6 +49,7 @@ The system processes multiple task files, executing user management commands one
 
 - **fmt** (10.1.1) - Modern C++ formatting library
 - **parsec** - Parser combinator library (included in third_party)
+- **Catch2** (3.4.0) - Testing framework (for development)
 
 ## Building
 
@@ -86,6 +87,11 @@ task-based-system/
 │   └── user/              # User management implementations
 ├── third_party/
 │   └── parsec/            # Parser combinator library
+├── tests/
+│   ├── test_task_processor.cpp
+│   ├── test_user_manager.cpp
+│   ├── test_command_registry.cpp
+│   └── test_integration.cpp
 └── tasks/
     ├── task1.txt
     ├── task2.txt
@@ -152,6 +158,89 @@ The system is designed for easy extension:
 2. **Dynamic Registration**: Commands are registered at runtime
 3. **Modular Design**: New operations don't require modifying existing execution flow
 
+## Testing
+
+The project includes comprehensive tests using **Catch2 v3.4.0** framework.
+
+### Test Structure
+
+Tests are organized by component:
+
+- **Unit Tests**: Test individual classes in isolation
+  - `test_user_manager.cpp` - UserManager functionality
+  - `test_task_processor.cpp` - TaskProcessor operations
+  - `test_command_registry.cpp` - Command registration and execution
+  
+- **Integration Tests**: Test component interactions
+  - `test_integration.cpp` - End-to-end workflow testing
+
+### Running Tests
+
+```bash
+# Build with tests enabled
+mkdir build && cd build
+cmake -DBUILD_TESTING=ON ..
+make
+
+# Run all tests
+ctest
+
+# Run specific test with verbose output
+ctest -V -R "TaskProcessor"
+
+# Run tests directly
+./wzh-assesment-tests
+```
+
+### Test Coverage
+
+The test suite covers:
+
+- **Happy Path**: Normal operation scenarios
+- **Error Handling**: Invalid inputs, missing files, user not found
+- **Edge Cases**: Empty files, malformed commands, boundary conditions
+- **Integration**: Complete task processing workflows
+
+### Example Test Output
+
+```
+===============================================================================
+All tests passed (41 assertions in 6 test cases)
+
+Test Summary:
+- TaskProcessor: File handling, command processing, error scenarios
+- UserManager: User creation, authentication, state management
+- CommandRegistry: Command registration, execution, validation
+- Integration: Complete workflow testing
+```
+
+### Writing New Tests
+
+When adding new features:
+
+1. **Create unit tests** for new classes/methods
+2. **Test error conditions** and edge cases
+3. **Add integration tests** for new workflows
+4. **Follow existing patterns** in test structure
+
+Example test structure:
+```cpp
+TEST_CASE("ClassName - Feature Description") {
+    // Setup
+    ClassName instance;
+    
+    SECTION("Success case") {
+        // Test normal operation
+        REQUIRE(instance.method() == expected_result);
+    }
+    
+    SECTION("Error case") {
+        // Test error handling
+        REQUIRE_THROWS_AS(instance.method("invalid"), std::runtime_error);
+    }
+}
+```
+
 ## Development
 
 ### Adding New Commands
@@ -159,19 +248,22 @@ The system is designed for easy extension:
 1. Create command class implementing the command interface
 2. Add command parser in parser module
 3. Register command in command registry
-4. Update documentation
-
-### Building with Tests
-```bash
-cmake -DBUILD_TESTING=ON ..
-make
-ctest
-```
+4. **Add corresponding tests** for the new command
+5. Update documentation
 
 ### Debug Build
 ```bash
-cmake -DCMAKE_BUILD_TYPE=Debug ..
+cmake -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON ..
 make
+```
+
+### Memory Debugging
+```bash
+# Run tests with valgrind
+valgrind --tool=memcheck --leak-check=full ./wzh-assesment-tests
+
+# Debug specific test failures
+gdb ./wzh-assesment-tests
 ```
 
 ## Example Usage
@@ -203,6 +295,7 @@ The system follows modern C++ practices:
 - **Modularity**: Clear separation of concerns
 - **Extensibility**: Plugin-like architecture for commands
 - **Type Safety**: Strong typing throughout the system
+- **Test-Driven**: Comprehensive test coverage for reliability
 
 ## License
 
