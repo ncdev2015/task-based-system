@@ -26,7 +26,7 @@ endif()
 
 # Set directories
 set(INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include)
-set(SOURCE_DIR ${CMAKE_SOURCE_DIR}/src)
+set(SOURCE_DIR ${CMAKE_SOURCE_DIR}/source)
 set(THIRD_PARTY_DIR ${CMAKE_SOURCE_DIR}/third_party)
 
 # Include directories
